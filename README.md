@@ -85,3 +85,8 @@ MIT — see `LICENSE`.
 - ❌ Indicators per chart — server refuses computing studies over the plan limit (`study_error`).
 - ❌ 1-second / custom intervals, deeper history, feeds, volume footprint/tick, server alerts,
   invite-only scripts, deep backtesting — server-side entitlements.
+
+## Supported domains
+The extension matches `https://*.tradingview.com/*` and `https://tradingview.com/*`, so it runs on
+the apex and **all locale subdomains** (and any future ones), e.g.:
+`www, in, de, fr, es, it, pl, tr, ru, br, id, my, th, vn, jp, kr, cn, tw, ar, il` `.tradingview.com`.
