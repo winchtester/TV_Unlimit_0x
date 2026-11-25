@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "TV Unlimit 0x — TradingView Drawing Unlock",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Lifts client-side TradingView limits that are not server-enforced: drawings + multi-chart layout.",
   "minimum_chrome_version": "100",
   "icons": {
@@ -14,7 +14,8 @@
   "content_scripts": [
     {
       "matches": [
-        "https://www.tradingview.com/*"
+        "https://*.tradingview.com/*",
+        "https://tradingview.com/*"
       ],
       "js": [
         "src/intercept.js"

@@ -1,5 +1,10 @@
 # Changelog — TV Unlimit 0x
 
+## 1.2.1
+- Fixed: extension now runs on ALL TradingView domains/subdomains — `*.tradingview.com`
+  (ru, de, es, …) and apex `tradingview.com`, not only `www`. (content_scripts `matches` broadened).
+
+
 ## 1.2.0
 - Added **multi-chart layout unlock** (client-side): override the pane cap so you can open 2+ charts.
   Works in-session (each chart's data loads normally); the extension re-applies it every load.
