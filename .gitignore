@@ -1,0 +1,7 @@
+# build artifacts / secrets
+dist/
+keys/
+*.pem
+*.crx
+*.zip
+.DS_Store

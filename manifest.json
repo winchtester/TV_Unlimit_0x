@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "TV Unlimit 0x — TradingView Drawing Unlock",
+  "version": "1.1.0",
+  "description": "Disables TradingView's client-side drawing limit (per-chart and aggregate). Seamless; drawings still save to the server.",
+  "minimum_chrome_version": "100",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhD0FsGsfLSo7BetSerBIulsxOBwBA4P8MasUEoXOzYjwMiJN19kKzhU9sh8crl3LMo0DltFSGRfQgqGD7aon/ZBUXjEPrYJ+42iwQIEBZEVwpFB+kWL7vGiMsyoFq/PVcnLK0M7efnE+j4yKVHDEpN4EqkdOvRFnuopP29XeCZUydg9nSVDD5Fj1Zq5M2WCC4PQB57G8Z5C1RZxYH0T6B9I3WDBbK5U3H3J7FpzRtko19Jzh2ugUEUYmjHuBWLuklA3Tkfm1V6LJcq+Di58ClEuGkBSNRON1KcPz/jwn9eg6gtqhn17SlJ5vkQOxuhq1MBuk396YvKNZklJNtFJPbwIDAQAB",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.tradingview.com/*"
+      ],
+      "js": [
+        "src/intercept.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}
