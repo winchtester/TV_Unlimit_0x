@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "TV Unlimit 0x — TradingView Drawing Unlock",
-  "version": "1.1.0",
-  "description": "Disables TradingView's client-side drawing limit (per-chart and aggregate). Seamless; drawings still save to the server.",
+  "version": "1.2.0",
+  "description": "Lifts client-side TradingView limits that are not server-enforced: drawings + multi-chart layout.",
   "minimum_chrome_version": "100",
   "icons": {
     "16": "icons/icon16.png",
@@ -20,6 +20,7 @@
         "src/intercept.js"
       ],
       "run_at": "document_start",
+      "world": "MAIN",
       "all_frames": true
     }
   ]

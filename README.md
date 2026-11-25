@@ -78,3 +78,10 @@ Prepared by the team — **https://t.me/Obsession_0x**
 
 ## License
 MIT — see `LICENSE`.
+
+## What is / isn't lifted (v1.2)
+- ✅ Drawings — unlimited (client gate only; server stores freely).
+- ✅ Multi-chart layout — open 2+ charts (client pane cap lifted; data loads normally, in-session).
+- ❌ Indicators per chart — server refuses computing studies over the plan limit (`study_error`).
+- ❌ 1-second / custom intervals, deeper history, feeds, volume footprint/tick, server alerts,
+  invite-only scripts, deep backtesting — server-side entitlements.

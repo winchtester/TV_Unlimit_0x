@@ -1,5 +1,15 @@
 # Changelog — TV Unlimit 0x
 
+## 1.2.0
+- Added **multi-chart layout unlock** (client-side): override the pane cap so you can open 2+ charts.
+  Works in-session (each chart's data loads normally); the extension re-applies it every load.
+  (The 2-chart layout itself is re-opened per session — the cap is re-raised automatically.)
+- Drawings unlock unchanged (feature-toggle off via localStorage).
+- Confirmed NOT liftable (server-side, verified): indicators-per-chart (server returns
+  `study_error` beyond the plan limit), 1-second/custom intervals, deeper history, data feeds,
+  volume footprint/tick data, server-side alerts, invite-only scripts, deep backtesting.
+
+
 ## 1.1.0
 - Reworked mechanism: disable the `drawings_per_chart_limit` feature flag via
   `localStorage["forcefeaturetoggle.drawings_per_chart_limit"] = "false"` at `document_start`.

@@ -1,55 +1,76 @@
 /*
- * TV Drawing Unlock — disables the client-side drawings limit.
+ * TV Unlimit — MAIN-world script.
  *
- * How it works (reverse-engineered from the production bundles):
- *   TradingView gates drawing creation with:
- *       drawingsPerChartLimit()  ->  isFeatureEnabled("drawings_per_chart_limit")
- *                                     ? getConfig(DRAWINGS_ON_CHART).limit  (30 on free)
- *                                     : null
- *   and ensureDrawingsLimitAllowed() blocks creation when the counter would exceed it.
+ * Lifts the client-side limits that are NOT enforced by the server:
+ *   1) Drawings: set localStorage force-override so isFeatureEnabled("drawings_per_chart_limit")
+ *      is false -> drawingsPerChartLimit() null -> unlimited drawings (server stores freely).
+ *   2) Multi-chart layout (panes): the pane cap (_planChartsLimit) is a pure client gate.
+ *      Overriding it lets you switch to 2+ charts (each chart's data loads normally).
  *
- *   isFeatureEnabled(name) reads a *forced* override from localStorage first:
- *       localStorage["forcefeaturetoggle." + name] === "false"  =>  feature OFF
- *   (exactly what the app's own FeatureToggle.disableFeature(name) writes).
+ * NOTE: indicators-per-chart is NOT lifted — the server refuses to compute studies over the
+ * plan limit (returns study_error), so a client bypass would only produce broken panes.
+ * 1-second intervals / deeper history / feeds / footprint / server alerts remain server-side.
  *
- *   So by writing one localStorage key we make isFeatureEnabled("drawings_per_chart_limit")
- *   return false -> drawingsPerChartLimit() returns null -> the gate always passes.
- *   This removes BOTH the aggregate limit and the per-chart limit, and it is read at
- *   draw time, so it works no matter how/when the app captured fetch. The server still
- *   stores every drawing (it has no count limit — only an 80 MB byte limit).
+ * Re-applied continuously because the chart collection / model can be recreated on
+ * navigation/symbol change and after reloads.
  *
- * localStorage is shared per-origin, so this works from a normal (isolated) content script.
- *
- * Disable this extension's effect at runtime (from the page console):
- *   localStorage.removeItem('forcefeaturetoggle.drawings_per_chart_limit'); location.reload();
+ * Disable for this page:  localStorage.setItem('tvUnlockDisabled','1'); location.reload();
+ * Re-enable:              localStorage.removeItem('tvUnlockDisabled'); location.reload();
  */
 (() => {
   "use strict";
-  const FLAG = "forcefeaturetoggle.drawings_per_chart_limit";
-  const DISABLED = "tvUnlockDisabled";
+  const G = window;
+  if (G.__TV_UNLIMIT__) return;
+  G.__TV_UNLIMIT__ = true;
 
-  function apply() {
-    try {
-      if (localStorage.getItem(DISABLED) === "1") {
-        // user turned it off: restore default (feature becomes enabled/protected again)
-        if (localStorage.getItem(FLAG) === "false") localStorage.removeItem(FLAG);
-        return;
-      }
-      if (localStorage.getItem(FLAG) !== "false") localStorage.setItem(FLAG, "false");
-    } catch (_) {}
+  const OFF = "tvUnlockDisabled";
+  const DRAW_FLAG = "forcefeaturetoggle.drawings_per_chart_limit";
+
+  function disabled() {
+    try { return localStorage.getItem(OFF) === "1"; } catch { return false; }
   }
 
-  // document_start: set it immediately, before the app reads feature flags.
-  apply();
+  function applyDrawingFlag() {
+    try {
+      if (disabled()) {
+        if (localStorage.getItem(DRAW_FLAG) === "false") localStorage.removeItem(DRAW_FLAG);
+        return;
+      }
+      if (localStorage.getItem(DRAW_FLAG) !== "false") localStorage.setItem(DRAW_FLAG, "false");
+    } catch {}
+  }
 
-  // Re-assert briefly in case the app rewrites defaults during init (cheap, then stop).
+  function patchChartLimits() {
+    if (disabled()) return;
+    try {
+      const A = G.TradingViewApi;
+      if (!A) return;
+      const C = A._chartWidgetCollection;
+      if (C) {
+        C._planChartsLimit = () => 50;
+        C._isChartsLimitApplied = () => false;
+        C._hasChartsAbovePlanLimit = () => false;
+      }
+    } catch {}
+  }
+
+  function tick() {
+    applyDrawingFlag();
+    patchChartLimits();
+  }
+
+  tick();
+
+  // Keep it applied while the app spins up and across chart re-creations.
   let n = 0;
   const timer = setInterval(() => {
-    apply();
-    if (++n >= 40) clearInterval(timer); // ~20s
+    tick();
+    if (++n >= 360) clearInterval(timer); // ~3 minutes
   }, 500);
 
-  try { window.addEventListener("DOMContentLoaded", apply); } catch (_) {}
+  try { addEventListener("DOMContentLoaded", tick); } catch {}
 
-  try { console.log("[TV Drawing Unlock] active — drawings limit disabled"); } catch (_) {}
+  try {
+    console.log("[TV Unlimit] active — drawings + multi-chart limits lifted (indicators stay server-limited)");
+  } catch {}
 })();
